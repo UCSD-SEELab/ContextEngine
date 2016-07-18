@@ -19,8 +19,9 @@ printFlag = True
 timestamps = {}
 # Create dictionary object for each of the context engine I/Os
 # each dictionary object includes: log name, JSON parameter in that log, lag
-dict0 = {'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e570002b',
-          'param': 'apparent_power',
+dict0 = {#'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e570002b',
+          'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e5300003',
+          'param': 'temperature_celcius',
           'lag': 0,
           'norm': 'lin'}
 dict4 = {'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e570002b',
@@ -62,7 +63,7 @@ secondTS = time.time()
 data = inDataTrain
 i = 0
 while trainRecStart < trainRecStop:
-    if algorithmTest.executeAndCluster(data[i][0]) == 1:
+    if True: #algorithmTest.executeAndCluster(data[i][0]) == 1:
         print int(algorithmTest.executeAndCluster(data[i][0])), inDataTrain[i][0], data[i][0]
     if i < batchSize:
         i = i + 1
