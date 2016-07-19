@@ -1,4 +1,3 @@
-from aenum import Enum
 import math
 import numpy as np
 import sys
@@ -6,57 +5,49 @@ from sklearn.cluster import KMeans
 sys.path.append("ContextEngineInterface")
 from CEInterface import ceInterface
 
-#sys.path.append("../python/Security/Encrypt/")
-#from encrypt import encrypt
-#from encrypt import rsaEncrypt
-#sys.path.remove("../python/Security/Encrypt/")
-#sys.path.append("../python/Security/Decrypt/")
-#from decrypt import rsaDecrypt
-#from decrypt import decrypt
 
 
-
-## Implementation of the context engine base class: the class inherited by other
-## machine learning algorithms.
+# Implementation of the context engine base class: 
+# this class inherited by each of the machine learning implementations, and
+# it contains the ceInterface object that is used to acquire and return data
+# from and to different sources, as well as functionality to train and test
+# machine learning algorithms.
 class ContextEngineBase(object):
     ## Member variables
-    #  Function order - limit the highest order of the function
-    # complexity = Complexity.firstOrder
-
-    #  Number of inputs - interface for the number of input variables -
-    #  defines input vector (+1 for training vector - n input, 1 output)
+    # Number of inputs - interface for the number of input variables -
+    # defines input vector (+1 for training vector - n input, 1 output)
     numInputs = 0
 
-    #  Classification of the output - 0 is continuous, 1+ is # of states
+    # Classification of the output - 0 is continuous, 1+ is # of states
+    # This variable is used to define output clustering.
     outputClassifier = 0
 
-    #  Classification of the inputs as an in-order list
+    # Classification of the inputs as an in-order list
+    # This variable is used to define input clustering.
     inputClassifiersList = []
 
-    #  Number of observations - a running count of the unique numbe of
-    #  observations
+    # Number of observations - a running count of the unique numbe of
+    # observations
     numObservations = 0
 
-    #  Additional custom algorithm-specific outputs as a key-value dictionary
+    # Additional custom algorithm-specific parameters as a 
+    # key-value dictionary
     customFieldsDict = {}
     
-    #  Matrix model - each row represents a new input vector
+    # Matrix model - each row represents a new input vector
     observationMatrix = np.empty([0, 0])
     observationMatrixIdx = np.empty([0, 0])
 
-    #  Coefficient vector - the column vector representing the trained
-    #  coefficients based on observations
+    # Coefficient vector - the column vector representing the trained
+    # coefficients based on observations
     coefficientVector = []
 
-    #  Output observation vector - the column vector of recorded observations
+    # Output observation vector - the column vector of recorded observations
     outputVector = []
     outputVectorIdx = []
-    #outputVectorNorm = []
 
-    #  Name of the file that contains the key for encryption/decryption
-    key = {}
 
-    #  Constructor - the order and number of inputs are mandatory
+    #  Constructor - 
     #  Parameters:
     #    numInputs: integer number of inputs
     #    outputClassifier: integer for discrete (#) or continuous (0) output
@@ -71,7 +62,6 @@ class ContextEngineBase(object):
         if (len(inputClassifiers) != numInputs):
             raise ValueError("The magnitude of inputClassifiers",
                              "must be the same as numInputs")
-        #self.complexity = complexity
         self.numInputs = numInputs
         self.outputClassifier = outputClassifier
         self.inputClassifiersList = inputClassifiers
@@ -80,17 +70,12 @@ class ContextEngineBase(object):
         # Generate the blank coefficient matrix
         self.coefficientVector = np.zeros([self.numInputs,1])
 
-        # Check for the presence of AES key in the key-value pair, and update 
-        # the value of key with the keyFileName passed as argument
-        if "key" in appFieldsDict:
-            key = appFieldsDict.get("key")
-            if len(key) != 0:
-                self.key = key
-
         # All other matrices/vectors are left the same, as they are dependent
         # on the number of observations.
 
-        # Check whether clustering is required in the output
+        # Check whether clustering is required for any of the inputs or
+        # outputs. If so, a KMeans object is created that handles clustering
+        # data into predefined states.
         if self.outputClassifier > 0:
             self.outputClustering = KMeans(n_clusters = self.outputClassifier,\
                     random_state = 170) # change to random later on
@@ -103,7 +88,7 @@ class ContextEngineBase(object):
                         self.inputClassifiersList[i], random_state = 170) # random
                 print ">> Input classifier %d with %d states defined" \
                         %(i, self.inputClassifiersList[i])
-        # Interface (i.e., GDP log info for IO)
+        # Interface defintion.(i.e., GDP log info for IO)
         if "interface" in appFieldsDict:
             inDicts = appFieldsDict["interface"]["in"]
             outDict = appFieldsDict["interface"]["out"]
@@ -115,9 +100,7 @@ class ContextEngineBase(object):
     #  row array of size numInputs. newOutputObs must be a single value.
     def addSingleObservation(self, newInputObs, newOutputObs):
         if (len(newInputObs) == self.numInputs
-            and type(newOutputObs) not in (tuple, list)):
-
-            # TODO: Replace the following code with a general implementation
+                and type(newOutputObs) not in (tuple, list)):
             if (self.observationMatrix.shape[0] == 0):
                 self.observationMatrix = np.array([newInputObs])
                 self.outputVector = np.array([newOutputObs])
@@ -133,36 +116,18 @@ class ContextEngineBase(object):
         else:
             print("Wrong dimensions!")
 
-
-    #  Add a set of training observations, with the newInputObsMatrix being a
-    #  set of correctly-sized vectors and newOutputVector being a vector of
-    #  individual values.
+    # Add a set of training observations, with the newInputObsMatrix being a
+    # set of correctly-sized vectors and newOutputVector being a vector of
+    # individual values.
     def addBatchObservations(self, newInputObsMatrix, newOutputVector):
         for newInputVector in newInputObsMatrix:
             outputValue = newOutputVector.pop()
             self.addSingleObservation(newInputVector, outputValue)
 
-      #  Returns the name of the file that contains the encrypted data, takes in 
-    #  name of the file containing key and name of the file to be encrypted
-    #def encrypt(self, plainTextFile):
-    #    if len(self.key) != 0:
-    #        rsaEncrypt(self.key)
-    #        return encrypt(self.key, plainTextFile)
-    #    else:
-    #        return
-            
-    #  Returns the name of the file that contains the decrypted data, takes in 
-    #  name of the file containing key and name of the file to be decrypted
-    #def decrypt(self, encyptedFile):
-    #    if len(self.key) != 0:
-    #        rsaDecrypt(self.key)
-    #        return decrypt(self.key, encyptedFile)
-    #    else:   
-    #        return
-
-    #  Train the coefficients on the existing observation matrix if there are
-    #  enough observations.
-
+    # Train the coefficients on the existing observation matrix if there are
+    # enough observations.
+    # This function must be overloaded by each of the machine learning
+    # implementation classes. 
     def train(self):
         if (self.observationMatrix.shape[0] >= self.numNormalizedInputs):
             print("Training started")
@@ -181,8 +146,7 @@ class ContextEngineBase(object):
         # according to this clustering, using "classify" function.
         self.normalizeData()
         # output clustering
-        if self.outputClassifier > 0:
-            # print np.asarray(self.outputVector).reshape(-1,1).reshape(-1,1)
+        if self.outputClassifier > 0: 
             self.outputClustering.fit(np.asarray(self.outputVector).reshape(-1,1))
             outClust = []
             for out in self.outputVector:
@@ -229,7 +193,7 @@ class ContextEngineBase(object):
                             cluster_centers_[self.inputClustering[i].
                             predict(float(inputObsVector[i]))][0][0]
         res = float(self.execute(normInp))
-        # Return cluster centroid if output is         if self.outputClassifier > 0:
+        # Return cluster centroid if output is         
         if self.outputClassifier > 0:
             return self.outputClustering.cluster_centers_[self.outputClustering\
                     .predict(float(res))][0][0]
@@ -246,18 +210,16 @@ class ContextEngineBase(object):
             if self.outputClassifier > 0:   # we have a clustering for output       
                 return self.outputClustering.cluster_centers_[\
                         self.outputClustering.predict(modNumber)][0][0]
-            # TODO add error case for when clustering has not been fitted yet
             else:
                 raise ValueError ("Clustering for output is undefined")
         elif index in self.inputClustering: # we have a clustering for this input
             return self.outputClustering.cluster_centers_[\
                    self.inputClustering[index].predict(modNumber)][0][0]
-            # TODO add error case for when clustering has not been fitted yet
         else:
             return number
 
     # normalize (zero mean and divide by standard deviation) for each
-    # of inputs or 
+    # of inputs. More normalization formats can be added in the future. 
     def normalizeData(self):
         # output normalization:
         # Linear normlization, zero-mean and divide by std
@@ -280,7 +242,8 @@ class ContextEngineBase(object):
                 self.updateSingleInputSnippet(normInp, i)
                 self.interface.inObjs[i].normParam = {'avg': avg, 'std': std}
             i = i + 1
-
+    # Normalize an array of data (snip) based on the normalization
+    # that is defined for one of the inputs or output.
     def normalizeSnippet(self, snip, idx):
         if idx == -1:
             if self.interface.outObj.norm == 'lin':
@@ -304,6 +267,7 @@ class ContextEngineBase(object):
         else:
             return [(r - avg) / std for r in snip]
 
+    # Revert normalization of a previously normalized data.
     def deNormalizeSnippet(self, snip, idx):
         if idx == -1:
             if self.interface.outObj.norm == 'lin':
@@ -325,7 +289,8 @@ class ContextEngineBase(object):
             return snip * std + avg
         else:
             return [f * std + avg for f in snip]
-
+    # Normlize all of the numbers in an input vector, based on
+    # each indiviual input's normalization parameters
     def normalizeInputRec(self, rec):
         # only 1 input
         if type(rec) == np.float64:
@@ -343,7 +308,8 @@ class ContextEngineBase(object):
             return rec
         else:
             raise ValueError ("Record Length does not match numInputs")
-    # TODO make this faster
+
+    # Update one of the inputs in the whole dataset.
     def updateSingleInputSnippet(self, snippet, idx):
         if len(self.observationMatrix) != len(snippet):
             raise ValueError ("Input update data snippet does not match the\
