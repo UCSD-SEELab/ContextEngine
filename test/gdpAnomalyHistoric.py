@@ -19,13 +19,12 @@ printFlag = True
 timestamps = {}
 # Create dictionary object for each of the context engine I/Os
 # each dictionary object includes: log name, JSON parameter in that log, lag
-dict0 = {#'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e570002b',
-          'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e5300003',
+dict0 = { 'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e5300003',
           'param': 'temperature_celcius',
           'lag': 0,
           'norm': 'lin'}
-dict4 = {'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e570002b',
-          'param': 'apparent_power',
+dict4 = {'gcl': 'edu.berkeley.eecs.swarmlab.device.c098e5300003',
+          'param': 'temperature_celcius',
           'lag': 4,
           'norm': ''}
 # Number of CE input
@@ -40,9 +39,9 @@ print "Collecting training and test data from GDP"
 # Use the collect data routine to fetch training data in separate lists
 # for input and output
 # TODO test on larger datasets
-trainRecStart = 1000
-trainRecStop = 4001
-batchSize = 200
+trainRecStart = 1041000
+trainRecStop =  1057300
+batchSize = 1500
 numTrainingSamples = trainRecStop - trainRecStart + 1
 inDataTrain, outDataTrain = algorithmTest.interface.collectData(trainRecStart, trainRecStart + batchSize)
 print "Done: collecting data from GDP"
@@ -63,8 +62,8 @@ secondTS = time.time()
 data = inDataTrain
 i = 0
 while trainRecStart < trainRecStop:
-    if True: #algorithmTest.executeAndCluster(data[i][0]) == 1:
-        print int(algorithmTest.executeAndCluster(data[i][0])), inDataTrain[i][0], data[i][0]
+    if algorithmTest.executeAndCluster(data[i][0]) == 1:
+        print trainRecStart + i, inDataTrain[i][0], data[i][0]
     if i < batchSize:
         i = i + 1
     else:
