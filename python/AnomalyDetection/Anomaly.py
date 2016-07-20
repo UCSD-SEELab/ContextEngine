@@ -1,61 +1,33 @@
-#This is the python version of the S-H-ESD algorithm,
-#origininally implemented by twitter in R. 
-#Version of S-H-ESD Algorithm from twitter/AnomalyDetection
-#Algorithm takes in a set of time series data and runs a modified
-#version of the S-H-ESD algorithm, removing anomalies from the dataset
-
+# This is the python version of the S-H-ESD algorithm,
+# origininally implemented by twitter in R. 
+# Original implementation reports a list of most anomalous data.
+# We have changed the functionality to fullfill our needs. We first
+# perform the designated preprocessing on the training data (a batch),
+# and then compute a threshold. This threshold is used to find anomalies
+# in the next batch of data.
 import csv
 import numpy as np
 import scipy
 import math
 
-#Read in data
-#with open(filename, 'rb') as f:
-#    reader = csv.reader(f)
-#    csvData = list(reader)
-
-#Set data formats
-#time = [i[0] for i in csvData] 
-#data = [i[1] for i in csvData]
-#np.asarray(data)
-
-
-
-
-
+# This function performs S-H-ESD preprocessing to remove seasonality.
+# Afterwards, a threshold is defined that is used to find anomalies.
 def AnomThresh(data):
     ares = [];
     i = 0;
     while(i < len(data)):
         ares.append(abs(data[i]))
         i = i+1;
-    datasigma = median(ares);
+    datasigma = np.median(ares);
 
     i = 0;
     while(i < len(data)):
         ares[i] = ares[i] / datasigma;
         i = i + 1;
 
-    newSigma = median(ares)
+    newSigma = np.median(ares)
 
-    thresh = 3*newSigma
-        
-    n = len(data)
-    
-    t = math.sqrt((n-1+1+datasigma**2)*(n-i+1))
-    lam = datasigma*(n-1)/t
- 
-    
+    thresh = 3*newSigma 
     return thresh
 
-
-
-def median(ls):
-    ls = sorted(ls)
-    if(len(ls) < 1):
-        return None
-    if(len(ls) % 2 == 1):
-        return ls[((len(ls)+1)/2)-1]
-    else:
-        return ls[((len(ls)+1)/2)]
 

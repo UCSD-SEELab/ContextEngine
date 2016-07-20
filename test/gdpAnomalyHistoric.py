@@ -63,7 +63,7 @@ data = inDataTrain
 i = 0
 while trainRecStart < trainRecStop:
     if algorithmTest.executeAndCluster(data[i][0]) == 1:
-        print trainRecStart + i, inDataTrain[i][0], data[i][0]
+        print trainRecStart + i, data[i][0]
     if i < batchSize:
         i = i + 1
     else:
