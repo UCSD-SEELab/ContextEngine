@@ -7,26 +7,25 @@ from ContextEngineBase import ContextEngineBase
 import sys, os
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
-## Implementation of the SVR algorithm:
+# Implementation of the SVM algorithm with linear kernel (sklearn)
 class LinSVM(ContextEngineBase):
-    svmObj = None  
-    # testList = []
-    #  Name of the file that contains the key for encryption/decryption
+    svmObj = None
     def __init__(self, numInputs, outputClassifier, 
             inputClassifiers,appFieldsDict): 
         ContextEngineBase.__init__(self, numInputs, 
                 outputClassifier, inputClassifiers, appFieldsDict)
+        # Parameters that are passed
         self.numInputs = numInputs
         self.outputClassifier = outputClassifier
         self.inputClassifiersList = inputClassifiers
         self.customFieldsDict = appFieldsDict
+        # Linear SVM object
         self.svmObj = svm.LinearSVC()
 
+    # Print: for testing purposes.
     def printO(self):
-        #print self.observationMatrix
-        #print self.outputVector
-        print self.testList
-        
+        print self.observationMatrix
+        print self.outputVector
 
     def addBatchObservations(self, newInputObsMatrix, newOutputVector):
         if(len(newInputObsMatrix.shape) == 2 and newInputObsMatrix.shape[1] == self.numInputs
@@ -54,8 +53,6 @@ class LinSVM(ContextEngineBase):
 
     def execute(self, inputObsVector):
         if(len(inputObsVector) == self.numInputs):
-            #print("Begin execute")
-            #x_Test = np.vstack((self.x_Test,inputObsVector))
             x_Test = np.reshape(inputObsVector,(1,self.numInputs))
             y_Test = self.svmObj.predict(x_Test)
             # self.testList.append(y_Test[0])

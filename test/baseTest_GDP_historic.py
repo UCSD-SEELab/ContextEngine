@@ -56,7 +56,9 @@ ceDict = {'interface': interfaceDict,
           'n_jobs': 1,
           'complexity': 1}
 
-algorithmTest = Knn(numInp, 0, [0,0,0,0], ceDict)
+# Algorithm that is subject to test.
+# algorithmTest = model (numInputs, outputClassifier, InputClassifiersList, ceDict)
+algorithmTest = SVR(numInp, 0, [0,0,0,0], ceDict)
 
 print "Collecting training and test data from GDP"
 # Use the collect data routine to fetch training data in separate lists
@@ -73,10 +75,13 @@ numExecuteSamples = testRecStop - testRecStart + 1
 inDataTest, outDataTest = algorithmTest.interface.collectData(testRecStart,testRecStop)
 print "Done: collecting data from GDP"
 print "Beginning loading and training"
+
 # For testing purpose. print input for test data
 # each line in output corresponds to one input data field (record)
 # print inDataTest
 
+# time stamps of various events are recorded to measure compuation time at 
+# each of the steps.
 timestamps = {}
 # Add training data to CE object
 for i in xrange(len(outDataTrain)):
@@ -132,6 +137,7 @@ for i in range(numExecuteSamples):
     runningNMAE += timestamps["delta" + str(i)]
 runningNMAE = runningNMAE/(1.0*avgActual*numExecuteSamples)
 
+# Time measurements and error report to console.
 print("Loading time (tot): " + str(netLoadingTime) + " seconds")
 print("Loading time (avg): " + str(netLoadingTime/(1.0*numTrainingSamples)) + " seconds")
 print("Training time: " + str(timestamps["train"]) + " seconds")

@@ -15,7 +15,7 @@ class DecisionTreeAB(ContextEngineBase):
     
     def __init__(self, numInputs, outputClassifier, inputClassifiers, appFieldsDict):
         ContextEngineBase.__init__(self, numInputs, outputClassifier, inputClassifiers, appFieldsDict)
-
+        # Defining a decision tree with adaboost classifier object (sklearn)
         self.decTreeAB = AdaBoostClassifier(DecisionTreeClassifier(max_depth=2))
         
         def addBatchObservations(self, newInputObsMatrix, newOutputVector):
@@ -36,7 +36,6 @@ class DecisionTreeAB(ContextEngineBase):
             raise ValueError('Decision Tree Classifier (w/ Adaboost) model output\
                      must be defined as discrete.')
         if (self.numObservations > 0):
-            #print("Training started");
             self.decTreeAB.fit(self.observationMatrix, self.outputVectorIdx);
             return True;
         else:
@@ -45,8 +44,6 @@ class DecisionTreeAB(ContextEngineBase):
     
     def execute(self, inputObsVector):
         if(len(inputObsVector) == self.numInputs):
-            #print("Begin execute");
-            #x_Test = np.vstack((self.x_Test,inputObsVector));
             x_Test = np.reshape(inputObsVector,(1,self.numInputs));
             self.y_Test = self.decTreeAB.predict(x_Test);
             return self.y_Test;

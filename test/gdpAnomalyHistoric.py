@@ -38,7 +38,6 @@ algorithmTest = Anom(numInp, 0,[0], ceDict)
 print "Collecting training and test data from GDP"
 # Use the collect data routine to fetch training data in separate lists
 # for input and output
-# TODO test on larger datasets
 trainRecStart = 1041000
 trainRecStop =  1057300
 batchSize = 1500

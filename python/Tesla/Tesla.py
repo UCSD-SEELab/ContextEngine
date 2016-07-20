@@ -117,7 +117,6 @@ class Tesla(ContextEngineBase):
 
                 # Only add non-duplicates
                 if (not self.__isADuplicate(normalizedInputObs, newOutputObs)):
-                    # TODO: Replace the following code with a general impl.
                     if (self.observationMatrix.shape[0] == 0):
                         self.observationMatrix = np.array([mergedInputObs])
                         self.outputVector = np.array([newOutputObs])

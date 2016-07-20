@@ -1,5 +1,5 @@
 # Wanlin Cui
-# Modified by Nima (to Wanlin: please contact me if something went wrong with the code because of this edit!)
+# Modified by Nima
 import sys, os
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import numpy as np
@@ -7,7 +7,7 @@ import math
 from sklearn import svm
 from ContextEngineBase import ContextEngineBase
 
-## Implementation of the SVR algorithm:
+## Implementation of the SVR algorithm (sklearm)
 class SVR(ContextEngineBase):
     svrLinear = None
     y_Test = np.empty([0])
@@ -28,12 +28,12 @@ class SVR(ContextEngineBase):
             svrDegree = appFieldsDict['degree']
         else:
             svrDegree = 1
+        # SVR regressor object
         self.svrLinear = svm.SVR(kernel='rbf', degree = svrDegree)
 
     def addBatchObservations(self, newInputObsMatrix, newOutputVector):
         if(len(newInputObsMatrix.shape) == 2 and newInputObsMatrix.shape[1] == self.numInputs
             and newOutputVector.shape[0] == newInputObsMatrix.shape[0]):
-            #print("All good!");
             newOutputVector = newOutputVector.ravel();
             i = 0;
             for newInputVector in newInputObsMatrix:

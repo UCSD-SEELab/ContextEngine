@@ -55,7 +55,6 @@ print "Collecting training and test data from GDP"
 # for input and output
 
 
-# TODO test on larger datasets
 trainRecStart = 2000
 trainRecStop = 2400
 numTrainingSamples = trainRecStop - trainRecStart + 1
