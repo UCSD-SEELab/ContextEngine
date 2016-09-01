@@ -58,7 +58,7 @@ ceDict = {'interface': interfaceDict,
 
 # Algorithm that is subject to test.
 # algorithmTest = model (numInputs, outputClassifier, InputClassifiersList, ceDict)
-algorithmTest = SVR(numInp, 0, [0,0,0,0], ceDict)
+algorithmTest = SVR(numInp, 3, [0,3,1,0], ceDict)
 
 print "Collecting training and test data from GDP"
 # Use the collect data routine to fetch training data in separate lists
